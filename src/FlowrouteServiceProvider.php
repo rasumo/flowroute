@@ -11,30 +11,11 @@ class FlowrouteServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // Bootstrap code here.
-
-        /**
-         * Here's some example code we use for the pusher package.
-
-        $this->app->when(Channel::class)
-            ->needs(Pusher::class)
+        $this->app->when(FlowrouteChannel::class)
+            ->needs(Flowroute::class)
             ->give(function () {
-                $pusherConfig = config('broadcasting.connections.pusher');
-
-                return new Pusher(
-                    $pusherConfig['key'],
-                    $pusherConfig['secret'],
-                    $pusherConfig['app_id']
-                );
+                return new Flowroute(config('services.flowroute'));
             });
-         */
 
-    }
-
-    /**
-     * Register the application services.
-     */
-    public function register()
-    {
     }
 }

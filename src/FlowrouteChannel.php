@@ -2,6 +2,7 @@
 
 namespace NotificationChannels\Flowroute;
 
+use GuzzleHttp\Client;
 use NotificationChannels\Flowroute\Exceptions\CouldNotSendNotification;
 use NotificationChannels\Flowroute\Events\MessageWasSent;
 use NotificationChannels\Flowroute\Events\SendingMessage;
@@ -9,9 +10,38 @@ use Illuminate\Notifications\Notification;
 
 class FlowrouteChannel
 {
-    public function __construct()
+    /**
+     * @var \NotificationChannels\Flowroute\Flowroute;
+     */
+    protected $flowroute;
+
+    /**
+     * The Guzzle HTTP Client.
+     *
+     * @var \GuzzleHttp\Client
+     */
+    protected $client;
+
+    /**
+     * The phone number notifications should be sent from.
+     *
+     * @var string
+     */
+    protected $from;
+
+
+    /**
+     * The API's URL.
+     *
+     * @var string
+     */
+    protected $apiBase = 'https://api.flowroute.com/v2/messages';
+
+    public function __construct(Client $client, Flowroute $flowroute)
     {
-        // Initialisation code here
+        $this->client = $client;
+        $this->flowroute = $flowroute;
+        $this->from = $this->flowroute->from();
     }
 
     /**
@@ -24,10 +54,29 @@ class FlowrouteChannel
      */
     public function send($notifiable, Notification $notification)
     {
-        //$response = [a call to the api of your notification send]
+        if (! $to = $notifiable->routeNotificationFor('flowroute')) {
+            return;
+        }
 
-//        if ($response->error) { // replace this by the code need to check for errors
-//            throw CouldNotSendNotification::serviceRespondedWithAnError($response);
-//        }
+        $message = $notification->toFlowroute($notifiable);
+
+        if (is_string($message)) {
+            $message = new FlowrouteMessage($message);
+        }
+
+        $payload = [
+            'from'  => $message->from ?: $this->from,
+            'to'    => $to,
+            'body'  => $message->getBody(),
+        ];
+
+        $response = $this->client->post($this->apiBase, [
+            'auth' => $this->flowroute->getAuth(),
+            'json' => $payload,
+        ]);
+
+        if ($response->getStatusCode() != 201 && $response->getStatusCode() != 200) {
+             throw CouldNotSendNotification::serviceRespondedWithAnError($response);
+        }
     }
 }

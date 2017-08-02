@@ -5,9 +5,9 @@
     "license": "MIT",
     "authors": [
         {
-            "name": ":author_name",
-            "email": ":author_email",
-            "homepage": ":author_website",
+            "name": "Marvin Whitfield",
+            "email": "marvin.whitfield@gmail.com",
+            "homepage": "http://www.marvinwhitfield.com",
             "role": "Developer"
         }
     ],
