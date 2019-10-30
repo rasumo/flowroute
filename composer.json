@@ -1,7 +1,7 @@
 {
-    "name": "laravel-notification-channels/flowroute",
+    "name": "rasumo/flowroute",
     "description": ":package_description",
-    "homepage": "https://github.com/laravel-notification-channels/flowroute",
+    "homepage": "https://github.com/rasumo/flowroute",
     "license": "MIT",
     "authors": [
         {
